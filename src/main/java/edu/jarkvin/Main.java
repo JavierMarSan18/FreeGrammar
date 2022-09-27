@@ -13,7 +13,7 @@ public class Main {
 
     private static void init() {
         String initVar;
-        LinkedList<Rule> rules = new LinkedList<>();
+        Set<Rule> rules = new HashSet<>();
 
         System.out.println("Ingresa variable inicial");
         initVar = scanner.nextLine();
@@ -25,9 +25,7 @@ public class Main {
             System.out.println("Ingresar regla");
             rule.setString(scanner.nextLine());
 
-            if(!rules.contains(rule)){
-                rules.add(rule);
-            }
+            rules.add(rule);
         }while (toContinue());
 
         System.out.println("Ingresar el numero de cadenas generadas:");
@@ -37,13 +35,14 @@ public class Main {
         showStrings(getStrings(rules, initVar, n));
     }
 
-    private static void showStrings(List<String> strings) {
-        Collections.sort(strings);
-        strings.forEach(System.out::println);
+    private static void showStrings(Set<String> strings) {
+        List<String> listStrings = new ArrayList<>(strings.stream().toList());
+        listStrings.sort(Collections.reverseOrder());
+        listStrings.forEach(System.out::println);
     }
 
-    private static List<String> getStrings(List<Rule> rules, String initial, int n) {
-        List<String> generatedStrings = new ArrayList<>();
+    private static Set<String> getStrings(Set<Rule> rules, String initial, int n) {
+        Set<String> generatedStrings = new HashSet<>();
 
         String concatString;
         do {
@@ -55,10 +54,8 @@ public class Main {
             }
 
             concatString = replaceVoid(concatString);
+            generatedStrings.add(concatString);
 
-            if(!generatedStrings.contains(concatString)){
-                generatedStrings.add(concatString);
-            }
         }while(generatedStrings.size() < n);
         return generatedStrings;
     }
@@ -67,21 +64,21 @@ public class Main {
         return str.replace("ε","");
     }
 
-    private static boolean existsNoTerminal(String str, List<Rule> rules) {
+    private static boolean existsNoTerminal(String str, Set<Rule> rules) {
         return !findRulesByString(str, rules).isEmpty();
     }
 
-    private static List<Rule> findRulesByString(String str, List<Rule> rules){
+    private static List<Rule> findRulesByString(String str, Set<Rule> rules){
         return rules.stream().filter(r -> str.contains(r.getVariable())).toList();
     }
 
-    private static String getInitialString(String initVar, List<Rule> rules) {
+    private static String getInitialString(String initVar, Set<Rule> rules) {
         List<Rule> initialRules = getRules(initVar, rules);
         Rule rule = initialRules.get(random.nextInt(initialRules.size()));
         return rule.getString();
     }
 
-    private static List<Rule> getRules(String variable, List<Rule> rules) {
+    private static List<Rule> getRules(String variable, Set<Rule> rules) {
         return rules.stream().filter(r -> variable.equals(r.getVariable())).toList();
     }
 
@@ -91,8 +88,10 @@ public class Main {
         return str;
     }
 
-    private static void showRules(LinkedList<Rule> rules) {
-        rules.forEach(r -> System.out.println(r.toString()));
+    private static void showRules(Set<Rule> rules) {
+        System.out.println("P = {");
+        rules.forEach(r -> System.out.println("\t"+r.toString()));
+        System.out.println("}");
     }
 
     static boolean toContinue() {
