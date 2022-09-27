@@ -42,6 +42,7 @@ public class Main {
         listStrings.forEach(System.out::println);
     }
 
+    //Genera cadenas a partir de las reglas de la gramática.
     private static Set<String> getStrings(Set<Rule> rules, String initial, int n) {
         Set<String> generatedStrings = new HashSet<>();
         String concatString;
